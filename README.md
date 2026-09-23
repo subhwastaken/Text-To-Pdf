@@ -1,32 +1,97 @@
-# TextCraft: Text to PDF & AI Formatter
+<div align="center">
 
-TextCraft is a modern web application built with Next.js that allows users to write or paste text, beautifully format it using AI (powered by Google Gemini), and export it to high-quality PDF documents that perfectly match the browser preview.
+# TextCraft (Text-to-PDF)
 
-## Features
+**An open-source, AI-powered Markdown editor and PDF generation engine — Built with Next.js 16, React 19, Google Gemini & React-PDF.**
 
-- **Native Markdown Editing:** A rich text editor built with `@uiw/react-md-editor` provides a flawless Markdown writing experience with a sleek dark mode.
-- **AI Formatting:** Instantly structure messy notes into organized, professional formats. The AI automatically generates:
-  - Markdown Tables for tabular data
-  - Callout blocks (Notes, Warnings, Tips)
-  - Syntax highlighted code blocks
-  - Bulleted and numbered lists
-- **1:1 Accurate PDF Generation:** Uses `@react-pdf/renderer` in combination with `react-pdf-html` and `marked` to ensure that the layout, nested lists, and formatting in the PDF exactly mirrors what you see in the editor preview. 
-- **Table of Contents:** Automatically generates a paginated Table of Contents for AI-formatted documents.
-- **Raw or Formatted:** Choose between downloading a raw text PDF or a fully styled AI-formatted PDF.
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Google Gemini](https://img.shields.io/badge/Google-Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![React-PDF](https://img.shields.io/badge/React--PDF-4.5-E11D48?style=for-the-badge)](https://react-pdf.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-## Tech Stack
+*Transform messy text into structured, publication-ready PDF documents with 1:1 layout fidelity.*
 
-- **Framework:** Next.js (App Router)
-- **Styling:** CSS Modules / Vanilla CSS (Custom Design System)
-- **Editor:** `@uiw/react-md-editor` (GitHub Flavored Markdown)
-- **PDF Engine:** `@react-pdf/renderer` paired with `react-pdf-html` and `marked`
-- **AI Integration:** Google Gemini API
+[Overview](#overview) • [Key Features](#key-features) • [Architecture](#architecture) • [Getting Started](#getting-started) • [Project Structure](#project-structure) • [Deployment](#deployment)
+
+</div>
+
+---
+
+## Overview
+
+**TextCraft** is a lightweight, privacy-focused alternative to proprietary text-to-PDF formatters like Kome.ai. It combines the flexibility of GitHub Flavored Markdown with Google Gemini's structuring intelligence, producing clean PDF documents matching your editor's live preview.
+
+Whether you're compiling meeting notes, structuring lecture transcripts, or converting raw documentation into formatted PDFs, TextCraft automates layout structuring, syntax formatting, callouts, and pagination.
+
+---
+
+## Key Features
+
+- **Split-Pane Markdown Editor**: Real-time side-by-side editing with GitHub Flavored Markdown (GFM) support powered by `@uiw/react-md-editor`.
+- **Intelligent AI Restructuring**: Powered by the Google Gemini API to parse unformatted stream-of-consciousness text into:
+  - Structured heading hierarchies (`H1` to `H4`)
+  - Formatted Markdown tables
+  - Styled alert callout boxes (Notes, Warnings, Tips)
+  - Syntax-highlighted code blocks
+  - Bulleted and numbered procedural checklists
+- **1:1 Pixel-Accurate PDF Generation**: Bridges `@react-pdf/renderer` with `react-pdf-html` and `marked` so that fonts, padding, list hierarchy, and table borders in the generated PDF match the live editor preview.
+- **Automated Table of Contents (TOC)**: Dynamically indexes document headings and calculates page anchors.
+- **Dual Export Modes**:
+  - **Raw Text PDF**: Fast, minimal export preserving raw formatting.
+  - **AI Enhanced PDF**: Formatted output with typographic hierarchy, badges, callouts, and borders.
+- **Zero Lock-in & Privacy**: Runs on your own Gemini API key with client-side PDF rendering.
+
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph UI["Frontend UI (Next.js 16)"]
+        Editor["@uiw/react-md-editor\n(Live Markdown View)"]
+        Toolbar["Export & AI Controls"]
+    end
+
+    subgraph API["Backend API Route"]
+        GeminiRoute["/api/format\n(Gemini 1.5 / 2.0 Flash)"]
+    end
+
+    subgraph Engine["PDF Generation Pipeline"]
+        MarkedParser["Marked.js\n(Markdown to HTML)"]
+        PDFHTML["react-pdf-html\n(HTML to PDF Primitives)"]
+        ReactPDF["@react-pdf/renderer\n(Vector PDF Engine)"]
+    end
+
+    subgraph Output["Artifact Deliverable"]
+        PDFFile["Downloadable PDF\n(1:1 Layout Matched)"]
+    end
+
+    Editor --> Toolbar
+    Toolbar -->|"Raw Prompt / Text"| GeminiRoute
+    GeminiRoute -->|"Structured Markdown"| Editor
+    Editor --> MarkedParser
+    MarkedParser --> PDFHTML
+    PDFHTML --> ReactPDF
+    ReactPDF --> PDFFile
+```
+
+---
 
 ## Getting Started
 
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v18.18.0 or higher
+- [npm](https://www.npmjs.com/) or [pnpm](https://pnpm.io/)
+- A [Google AI Studio Gemini API Key](https://aistudio.google.com/)
+
+### Installation
+
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Subharup-31/Text-To-Pdf.git
+   git clone https://github.com/subhwastaken/Text-To-Pdf.git
    cd Text-To-Pdf
    ```
 
@@ -35,20 +100,60 @@ TextCraft is a modern web application built with Next.js that allows users to wr
    npm install
    ```
 
-3. **Set up Environment Variables:**
-   Create a `.env.local` file in the root directory and add your Gemini API key:
+3. **Configure Environment Variables:**
+   Create a `.env.local` file in the project root:
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
-4. **Run the development server:**
+4. **Start the Development Server:**
    ```bash
    npm run dev
    ```
 
-5. **Open your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000) to see the app.
+5. **Access the Application:**
+   Open your browser and navigate to `http://localhost:3000`.
+
+---
+
+## Project Structure
+
+```
+Text-To-Pdf/
+├── public/                  # Static assets and brand icons
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── format/      # Gemini API formatting route
+│   │   │       └── route.js
+│   │   ├── globals.css      # Custom design system & theme variables
+│   │   ├── layout.js        # Root application layout
+│   │   └── page.js          # Main split-pane workspace
+│   └── components/
+│       ├── MarkdownPDF.js   # @react-pdf document definition & styling
+│       └── PDFDownloadSection.js # PDF preview & download handler
+├── package.json
+├── next.config.mjs
+├── postcss.config.mjs
+└── README.md
+```
+
+---
 
 ## Deployment
 
-The easiest way to deploy this Next.js app is to use the [Vercel Platform](https://vercel.com/new). Don't forget to add your `GEMINI_API_KEY` to the Vercel Environment Variables before deploying.
+### Deploy on Vercel
+
+The fastest way to deploy your TextCraft instance:
+
+1. Push your repository to GitHub.
+2. Import the repository into [Vercel](https://vercel.com/new).
+3. Under **Environment Variables**, configure:
+   - `GEMINI_API_KEY`: Your Google AI Studio API key.
+4. Click **Deploy**.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
